@@ -60,14 +60,14 @@ load(Env) ->
 on_client_connected(ConnAck, Client = #mqtt_client{client_id  = ClientId}, _Env) ->
     io:format("client ~s connected, connack: ~w~n", [ClientId, ConnAck]),
 
-    Json = mochijson2:encode([
-        {type, <<"connected">>},
-        {client_id, ClientId},
-        {cluster_node, node()},
-        {ts, emqttd_time:now_to_secs()}
-    ]),
-    
-    ekaf:produce_async_batched(<<"broker_message">>, list_to_binary(Json)),
+%%    Json = mochijson2:encode([
+%%        {type, <<"connected">>},
+%%        {client_id, ClientId},
+%%        {cluster_node, node()},
+%%        {ts, emqttd_time:now_to_secs()}
+%%    ]),
+%%
+%%    ekaf:produce_async_batched(<<"broker_message">>, list_to_binary(Json)),
 
     {ok, Client}.
 
@@ -80,15 +80,15 @@ on_client_connected(ConnAck, Client = #mqtt_client{client_id  = ClientId}, _Env)
 on_client_disconnected(Reason, ClientId, _Env) ->
     io:format("client ~s disconnected, reason: ~w~n", [ClientId, Reason]),
 
-    Json = mochijson2:encode([
-        {type, <<"disconnected">>},
-        {client_id, ClientId},
-        {reason, Reason},
-        {cluster_node, node()},
-        {ts, emqttd_time:now_to_secs()}
-    ]),
-
-    ekaf:produce_async_batched(<<"broker_message">>, list_to_binary(Json)),
+%%    Json = mochijson2:encode([
+%%        {type, <<"disconnected">>},
+%%        {client_id, ClientId},
+%%        {reason, Reason},
+%%        {cluster_node, node()},
+%%        {ts, emqttd_time:now_to_secs()}
+%%    ]),
+%%
+%%    ekaf:produce_async_batched(<<"broker_message">>, list_to_binary(Json)),
 
     ok.
 
@@ -106,23 +106,23 @@ on_client_subscribe(ClientId, TopicTable, _Env) ->
 on_client_subscribe_after(ClientId, TopicTable, _Env) ->
     io:format("client ~s subscribed ~p~n", [ClientId, TopicTable]),
     
-    case TopicTable of
-        [_|_] -> 
-            %% If TopicTable list is not empty
-            Key = proplists:get_keys(TopicTable),
-            %% build json to send using ClientId
-            Json = mochijson2:encode([
-                {type, <<"subscribed">>},
-                {client_id, ClientId},
-                {topic, lists:last(Key)},
-                {cluster_node, node()},
-                {ts, emqttd_time:now_to_secs()}
-            ]),
-            ekaf:produce_async_batched(<<"broker_message">>, list_to_binary(Json));
-        _ -> 
-            %% If TopicTable is empty
-            io:format("empty topic ~n")
-    end,
+%%    case TopicTable of
+%%[_|_] ->
+%%%% If TopicTable list is not empty
+%%Key = proplists:get_keys(TopicTable),
+%%%% build json to send using ClientId
+%%Json = mochijson2:encode([
+%%{type, <<"subscribed">>},
+%%{client_id, ClientId},
+%%{topic, lists:last(Key)},
+%%{cluster_node, node()},
+%%{ts, emqttd_time:now_to_secs()}
+%%]),
+%%ekaf:produce_async_batched(<<"broker_message">>, list_to_binary(Json));
+%%_ ->
+%%%% If TopicTable is empty
+%%io:format("empty topic ~n")
+%%end,
 
     {ok, TopicTable}.
 
@@ -135,16 +135,16 @@ on_client_subscribe_after(ClientId, TopicTable, _Env) ->
 on_client_unsubscribe(ClientId, Topics, _Env) ->
     io:format("client ~s unsubscribe ~p~n", [ClientId, Topics]),
 
-    % build json to send using ClientId
-    Json = mochijson2:encode([
-        {type, <<"unsubscribed">>},
-        {client_id, ClientId},
-        {topic, lists:last(Topics)},
-        {cluster_node, node()},
-        {ts, emqttd_time:now_to_secs()}
-    ]),
-    
-    ekaf:produce_async_batched(<<"broker_message">>, list_to_binary(Json)),
+%%    % build json to send using ClientId
+%%    Json = mochijson2:encode([
+%%        {type, <<"unsubscribed">>},
+%%        {client_id, ClientId},
+%%        {topic, lists:last(Topics)},
+%%        {cluster_node, node()},
+%%        {ts, emqttd_time:now_to_secs()}
+%%    ]),
+%%
+%%    ekaf:produce_async_batched(<<"broker_message">>, list_to_binary(Json)),
     
     {ok, Topics}.
 
@@ -159,26 +159,26 @@ on_message_publish(Message = #mqtt_message{topic = <<"$SYS/", _/binary>>}, _Env)
     {ok, Message};
 
 on_message_publish(Message, _Env) ->
-    io:format("publish ~s~n", [emqttd_message:format(Message)]),   
-
-    From = Message#mqtt_message.from,
-    Sender =  Message#mqtt_message.sender,
-    Topic = Message#mqtt_message.topic,
-    Payload = Message#mqtt_message.payload, 
-    QoS = Message#mqtt_message.qos,
-    Timestamp = Message#mqtt_message.timestamp,
-
-    Json = mochijson2:encode([
-        {type, <<"published">>},
-        {client_id, From},
-        {topic, Topic},
-        {payload, Payload},
-        {qos, QoS},
-        {cluster_node, node()},
-        {ts, emqttd_time:now_to_secs(Timestamp)}
-    ]),
-
-    ekaf:produce_async_batched(<<"broker_message">>, list_to_binary(Json)),
+    io:format("publish ~s~n", [emqttd_message:format(Message)]),
+%%
+%%    From = Message#mqtt_message.from,
+%%    Sender =  Message#mqtt_message.sender,
+%%    Topic = Message#mqtt_message.topic,
+%%    Payload = Message#mqtt_message.payload,
+%%    QoS = Message#mqtt_message.qos,
+%%    Timestamp = Message#mqtt_message.timestamp,
+%%
+%%    Json = mochijson2:encode([
+%%        {type, <<"published">>},
+%%        {client_id, From},
+%%        {topic, Topic},
+%%        {payload, Payload},
+%%        {qos, QoS},
+%%        {cluster_node, node()},
+%%        {ts, emqttd_time:now_to_secs(Timestamp)}
+%%    ]),
+%%
+%%    ekaf:produce_async_batched(<<"broker_message">>, list_to_binary(Json)),
 
     {ok, Message}.
 
@@ -186,25 +186,25 @@ on_message_publish(Message, _Env) ->
 on_message_delivered(ClientId, Message, _Env) ->
     io:format("delivered to client ~s: ~s~n", [ClientId, emqttd_message:format(Message)]),
 
-    From = Message#mqtt_message.from,
-    Sender =  Message#mqtt_message.sender,
-    Topic = Message#mqtt_message.topic,
-    Payload = Message#mqtt_message.payload, 
-    QoS = Message#mqtt_message.qos,
-    Timestamp = Message#mqtt_message.timestamp,
-
-    Json = mochijson2:encode([
-        {type, <<"delivered">>},
-        {client_id, ClientId},
-        {from, From},
-        {topic, Topic},
-        {payload, Payload},
-        {qos, QoS},
-        {cluster_node, node()},
-        {ts, emqttd_time:now_to_secs(Timestamp)}
-    ]),
-
-    ekaf:produce_async_batched(<<"broker_message">>, list_to_binary(Json)),
+%%    From = Message#mqtt_message.from,
+%%    Sender =  Message#mqtt_message.sender,
+%%    Topic = Message#mqtt_message.topic,
+%%    Payload = Message#mqtt_message.payload,
+%%    QoS = Message#mqtt_message.qos,
+%%    Timestamp = Message#mqtt_message.timestamp,
+%%
+%%    Json = mochijson2:encode([
+%%        {type, <<"delivered">>},
+%%        {client_id, ClientId},
+%%        {from, From},
+%%        {topic, Topic},
+%%        {payload, Payload},
+%%        {qos, QoS},
+%%        {cluster_node, node()},
+%%        {ts, emqttd_time:now_to_secs(Timestamp)}
+%%    ]),
+%%
+%%    ekaf:produce_async_batched(<<"broker_message">>, list_to_binary(Json)),
 
     {ok, Message}.
 %%-----------message delivered end----------------------------------------%%
@@ -213,25 +213,25 @@ on_message_delivered(ClientId, Message, _Env) ->
 on_message_acked(ClientId, Message, _Env) ->
     io:format("client ~s acked: ~s~n", [ClientId, emqttd_message:format(Message)]),   
 
-    From = Message#mqtt_message.from,
-    Sender =  Message#mqtt_message.sender,
-    Topic = Message#mqtt_message.topic,
-    Payload = Message#mqtt_message.payload, 
-    QoS = Message#mqtt_message.qos,
-    Timestamp = Message#mqtt_message.timestamp,
-
-    Json = mochijson2:encode([
-        {type, <<"acked">>},
-        {client_id, ClientId},
-        {from, From},
-        {topic, Topic},
-        {payload, Payload},
-        {qos, QoS},
-        {cluster_node, node()},
-        {ts, emqttd_time:now_to_secs(Timestamp)}
-    ]),
-
-    ekaf:produce_async_batched(<<"broker_message">>, list_to_binary(Json)),
+%%    From = Message#mqtt_message.from,
+%%    Sender =  Message#mqtt_message.sender,
+%%    Topic = Message#mqtt_message.topic,
+%%    Payload = Message#mqtt_message.payload,
+%%    QoS = Message#mqtt_message.qos,
+%%    Timestamp = Message#mqtt_message.timestamp,
+%%
+%%    Json = mochijson2:encode([
+%%        {type, <<"acked">>},
+%%        {client_id, ClientId},
+%%        {from, From},
+%%        {topic, Topic},
+%%        {payload, Payload},
+%%        {qos, QoS},
+%%        {cluster_node, node()},
+%%        {ts, emqttd_time:now_to_secs(Timestamp)}
+%%    ]),
+%%
+%%    ekaf:produce_async_batched(<<"broker_message">>, list_to_binary(Json)),
     {ok, Message}.
 
 %% ===================================================================
@@ -239,7 +239,7 @@ on_message_acked(ClientId, Message, _Env) ->
 %% ===================================================================
 
 ekaf_init(_Env) ->
-    %% Get parameters
+    %% Get parameters，kafka配置，发送数据
     {ok, Kafka} = application:get_env(emqttd_plugin_kafka_bridge, kafka),
     BootstrapBroker = proplists:get_value(bootstrap_broker, Kafka),
     PartitionStrategy= proplists:get_value(partition_strategy, Kafka),
