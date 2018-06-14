@@ -73,8 +73,7 @@ on_session_unsubscribed(ClientId, {Topic, Opts}, _Env) ->
     ok.
 
 on_session_terminated(ClientId, Reason, _Env) ->
-    io:format("session(~s/~s) terminated: ~p.", [ClientId, Reason]),
-    stop.
+    io:format("session(~s/~s) terminated: ~p.", [ClientId, Reason]).
 
 %% transform message and return
 on_message_publish(Message = #mqtt_message{topic = <<"$SYS/", _/binary>>}, _Env) ->
