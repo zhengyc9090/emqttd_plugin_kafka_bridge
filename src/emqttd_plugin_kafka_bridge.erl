@@ -79,14 +79,79 @@ on_message_publish(Message = #mqtt_message{topic = <<"$SYS/", _/binary>>}, _Env)
 
 on_message_publish(Message, _Env) ->
     io:format("publish ~s~n", [emqttd_message:format(Message)]),
+
+%    From = Message#mqtt_message.from,
+%    Sender =  Message#mqtt_message.sender,
+    Topic = Message#mqtt_message.topic,
+    Payload = Message#mqtt_message.payload,
+    QoS = Message#mqtt_message.qos,
+    Timestamp = Message#mqtt_message.timestamp,
+
+    Json = mochijson2:encode([
+        {type, <<"published">>},
+%        {client_id, From},
+        {topic, Topic},
+% 如果是二进制 {payload, binary_to_list(Payload)},
+        {payload, Payload},
+        {qos, QoS},
+        {cluster_node, node()}
+%        ,{ts, emqttd_time:now_to_secs(Timestamp)}
+    ]),
+
+    ekaf:produce_sync(<<"broker_message">>, list_to_binary(Json)),
+
     {ok, Message}.
 
 on_message_delivered(ClientId,Username, Message, _Env) ->
     io:format("delivered to client ~s: ~s~n", [ClientId, emqttd_message:format(Message)]),
+
+%    From = Message#mqtt_message.from,
+%    Sender =  Message#mqtt_message.sender,
+    Topic = Message#mqtt_message.topic,
+    Payload = Message#mqtt_message.payload,
+    QoS = Message#mqtt_message.qos,
+    Timestamp = Message#mqtt_message.timestamp,
+
+    Json = mochijson2:encode([
+        {type, <<"delivered">>},
+        {client_id, ClientId},
+%        {from, From},
+        {topic, Topic},
+% 如果是二进制 {payload, binary_to_list(Payload)},
+        {payload, Payload},
+        {qos, QoS},
+        {cluster_node, node()}
+%        ,{ts, emqttd_time:now_to_secs(Timestamp)}
+    ]),
+
+    ekaf:produce_sync(<<"broker_message">>, list_to_binary(Json)),
+
     {ok, Message}.
 
 on_message_acked(ClientId,Username, Message, _Env) ->
     io:format("client ~s acked: ~s~n", [ClientId, emqttd_message:format(Message)]),
+
+%    From = Message#mqtt_message.from,
+%    Sender =  Message#mqtt_message.sender,
+    Topic = Message#mqtt_message.topic,
+    Payload = Message#mqtt_message.payload,
+    QoS = Message#mqtt_message.qos,
+    Timestamp = Message#mqtt_message.timestamp,
+
+    Json = mochijson2:encode([
+        {type, <<"acked">>},
+        {client_id, ClientId},
+%        {from, From},
+        {topic, Topic},
+% 如果是二进制 {payload, binary_to_list(Payload)},
+        {payload, Payload},
+        {qos, QoS},
+        {cluster_node, node()}
+%        ,{ts, emqttd_time:now_to_secs(Timestamp)}
+    ]),
+
+    ekaf:produce_sync(<<"broker_message">>, list_to_binary(Json)),
+
     {ok, Message}.
 
 %% Called when the plugin application stop
