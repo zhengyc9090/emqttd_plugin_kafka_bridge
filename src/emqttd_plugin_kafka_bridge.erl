@@ -48,7 +48,7 @@ on_client_disconnected(Reason, _Client = #mqtt_client{client_id = ClientId}, _En
     ok.
 
 on_client_subscribe(ClientId,Username ,TopicTable, _Env) ->
-    io:format("client(~s/~s) will subscribe: ~p~n", [ClientId, TopicTable]),
+    io:format("client ~s will subscribe ~p~n", [ClientId, TopicTable]),
 
     case TopicTable of
         [_|_] ->
@@ -70,7 +70,7 @@ on_client_subscribe(ClientId,Username ,TopicTable, _Env) ->
     {ok, TopicTable}.
 
 on_client_unsubscribe(ClientId,Username, Topics, _Env) ->
-    io:format("client(~s/~s) unsubscribe ~p~n", [ClientId, Topics]),
+    io:format("client ~s unsubscribe ~p~n", [ClientId, Topics]),
     {ok, Topics}.
 
 %% transform message and return
@@ -82,11 +82,11 @@ on_message_publish(Message, _Env) ->
     {ok, Message}.
 
 on_message_delivered(ClientId,Username, Message, _Env) ->
-    io:format("delivered to client(~s/~s): ~s~n", [ClientId, emqttd_message:format(Message)]),
+    io:format("delivered to client ~s: ~s~n", [ClientId, emqttd_message:format(Message)]),
     {ok, Message}.
 
 on_message_acked(ClientId,Username, Message, _Env) ->
-    io:format("client(~s/~s) acked: ~s~n", [ClientId, emqttd_message:format(Message)]),
+    io:format("client ~s acked: ~s~n", [ClientId, emqttd_message:format(Message)]),
     {ok, Message}.
 
 %% Called when the plugin application stop
