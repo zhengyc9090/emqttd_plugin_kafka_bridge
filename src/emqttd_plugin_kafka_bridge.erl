@@ -26,8 +26,6 @@
 
 -export([on_client_subscribe/3, on_client_unsubscribe/3]).
 
--export([on_session_created/2, on_session_subscribed/3, on_session_unsubscribed/3, on_session_terminated/3]).
-
 -export([on_message_publish/2, on_message_delivered/3, on_message_acked/3]).
 
 %% Called when the plugin application start
@@ -37,10 +35,6 @@ load(Env) ->
     emqttd:hook('client.disconnected', fun ?MODULE:on_client_disconnected/3, [Env]),
     emqttd:hook('client.subscribe', fun ?MODULE:on_client_subscribe/3, [Env]),
     emqttd:hook('client.unsubscribe', fun ?MODULE:on_client_unsubscribe/3, [Env]),
-    emqttd:hook('session.created', fun ?MODULE:on_session_created/2, [Env]),
-    emqttd:hook('session.subscribed', fun ?MODULE:on_session_subscribed/3, [Env]),
-    emqttd:hook('session.unsubscribed', fun ?MODULE:on_session_unsubscribed/3, [Env]),
-    emqttd:hook('session.terminated', fun ?MODULE:on_session_terminated/3, [Env]),
     emqttd:hook('message.publish', fun ?MODULE:on_message_publish/2, [Env]),
     emqttd:hook('message.delivered', fun ?MODULE:on_message_delivered/3, [Env]),
     emqttd:hook('message.acked', fun ?MODULE:on_message_acked/3, [Env]).
@@ -60,20 +54,6 @@ on_client_subscribe(ClientId, TopicTable, _Env) ->
 on_client_unsubscribe(ClientId, Topics, _Env) ->
     io:format("client(~s/~s) unsubscribe ~p~n", [ClientId, Topics]),
     {ok, Topics}.
-
-on_session_created(ClientId, _Env) ->
-    io:format("session(~s/~s) created.", [ClientId]).
-
-on_session_subscribed(ClientId, {Topic, Opts}, _Env) ->
-    io:format("session(~s/~s) subscribed: ~p~n", [ClientId, {Topic, Opts}]),
-    {ok, {Topic, Opts}}.
-
-on_session_unsubscribed(ClientId, {Topic, Opts}, _Env) ->
-    io:format("session(~s/~s) unsubscribed: ~p~n", [ClientId, {Topic, Opts}]),
-    ok.
-
-on_session_terminated(ClientId, Reason, _Env) ->
-    io:format("session(~s/~s) terminated: ~p.", [ClientId, Reason]).
 
 %% transform message and return
 on_message_publish(Message = #mqtt_message{topic = <<"$SYS/", _/binary>>}, _Env) ->
@@ -97,10 +77,6 @@ unload() ->
     emqttd:unhook('client.disconnected', fun ?MODULE:on_client_disconnected/3),
     emqttd:unhook('client.subscribe', fun ?MODULE:on_client_subscribe/3),
     emqttd:unhook('client.unsubscribe', fun ?MODULE:on_client_unsubscribe/3),
-    emqttd:unhook('session.created', fun ?MODULE:on_session_created/2),
-    emqttd:unhook('session.subscribed', fun ?MODULE:on_session_subscribed/3),
-    emqttd:unhook('session.unsubscribed', fun ?MODULE:on_session_unsubscribed/3),
-    emqttd:unhook('session.terminated', fun ?MODULE:on_session_terminated/3),
     emqttd:unhook('message.publish', fun ?MODULE:on_message_publish/2),
     emqttd:unhook('message.delivered', fun ?MODULE:on_message_delivered/3),
     emqttd:unhook('message.acked', fun ?MODULE:on_message_acked/3).
