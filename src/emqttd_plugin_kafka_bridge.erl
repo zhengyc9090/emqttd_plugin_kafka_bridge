@@ -125,11 +125,3 @@ ekaf_init(_Env) ->
 
     io:format("Init ekaf with ~p~n", [BootstrapBroker]).
 %% ==================== ekaf_init END.===============================%%
-
-i(true) -> 1;
-i(false) -> 0;
-i(I) when is_integer(I) -> I.
-c({ClientId, Username}) -> ClientId;
-c(From) -> From.
-u({ClientId, Username}) -> Username;
-u(From) -> From.
