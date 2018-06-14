@@ -24,20 +24,20 @@
 
 -export([on_client_connected/3, on_client_disconnected/3]).
 
--export([on_client_subscribe/3, on_client_unsubscribe/3]).
+-export([on_client_subscribe/4, on_client_unsubscribe/4]).
 
--export([on_message_publish/2, on_message_delivered/3, on_message_acked/3]).
+-export([on_message_publish/2, on_message_delivered/4, on_message_acked/4]).
 
 %% Called when the plugin application start
 load(Env) ->
     ekaf_init([Env]),
     emqttd:hook('client.connected', fun ?MODULE:on_client_connected/3, [Env]),
     emqttd:hook('client.disconnected', fun ?MODULE:on_client_disconnected/3, [Env]),
-    emqttd:hook('client.subscribe', fun ?MODULE:on_client_subscribe/3, [Env]),
-    emqttd:hook('client.unsubscribe', fun ?MODULE:on_client_unsubscribe/3, [Env]),
+    emqttd:hook('client.subscribe', fun ?MODULE:on_client_subscribe/4, [Env]),
+    emqttd:hook('client.unsubscribe', fun ?MODULE:on_client_unsubscribe/4, [Env]),
     emqttd:hook('message.publish', fun ?MODULE:on_message_publish/2, [Env]),
-    emqttd:hook('message.delivered', fun ?MODULE:on_message_delivered/3, [Env]),
-    emqttd:hook('message.acked', fun ?MODULE:on_message_acked/3, [Env]).
+    emqttd:hook('message.delivered', fun ?MODULE:on_message_delivered/4, [Env]),
+    emqttd:hook('message.acked', fun ?MODULE:on_message_acked/4, [Env]).
 
 on_client_connected(ConnAck, Client = #mqtt_client{client_id = ClientId}, _Env) ->
     io:format("client ~s connected, connack: ~w~n", [ClientId, ConnAck]),
@@ -47,11 +47,29 @@ on_client_disconnected(Reason, _Client = #mqtt_client{client_id = ClientId}, _En
     io:format("client ~s disconnected, reason: ~w~n", [ClientId, Reason]),
     ok.
 
-on_client_subscribe(ClientId, TopicTable, _Env) ->
+on_client_subscribe(ClientId,Username ,TopicTable, _Env) ->
     io:format("client(~s/~s) will subscribe: ~p~n", [ClientId, TopicTable]),
+
+    case TopicTable of
+        [_|_] ->
+            %% If TopicTable list is not empty
+            Key = proplists:get_keys(TopicTable),
+            %% build json to send using ClientId
+            Json = mochijson2:encode([
+                {type, <<"subscribed">>},
+                {client_id, ClientId},
+                {topic, lists:last(Key)},
+                {cluster_node, node()}
+            ]),
+            ekaf:produce_sync(<<"broker_message">>, list_to_binary(Json));
+        _ ->
+            %% If TopicTable is empty
+            io:format("empty topic ~n")
+    end,
+
     {ok, TopicTable}.
 
-on_client_unsubscribe(ClientId, Topics, _Env) ->
+on_client_unsubscribe(ClientId,Username, Topics, _Env) ->
     io:format("client(~s/~s) unsubscribe ~p~n", [ClientId, Topics]),
     {ok, Topics}.
 
@@ -63,11 +81,11 @@ on_message_publish(Message, _Env) ->
     io:format("publish ~s~n", [emqttd_message:format(Message)]),
     {ok, Message}.
 
-on_message_delivered(ClientId, Message, _Env) ->
+on_message_delivered(ClientId,Username, Message, _Env) ->
     io:format("delivered to client(~s/~s): ~s~n", [ClientId, emqttd_message:format(Message)]),
     {ok, Message}.
 
-on_message_acked(ClientId, Message, _Env) ->
+on_message_acked(ClientId,Username, Message, _Env) ->
     io:format("client(~s/~s) acked: ~s~n", [ClientId, emqttd_message:format(Message)]),
     {ok, Message}.
 
