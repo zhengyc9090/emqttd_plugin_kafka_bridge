@@ -16,6 +16,8 @@
 
 -module(emqttd_plugin_kafka_bridge).
 
+-include_lib("../../emqttd/include/emqttd.hrl").
+
 -export([load/1, unload/0]).
 
 %% Hooks functions
