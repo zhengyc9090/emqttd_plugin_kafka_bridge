@@ -43,52 +43,63 @@ load(Env) ->
     emqttd:hook('session.terminated', fun ?MODULE:on_session_terminated/4, [Env]),
     emqttd:hook('message.publish', fun ?MODULE:on_message_publish/2, [Env]),
     emqttd:hook('message.delivered', fun ?MODULE:on_message_delivered/4, [Env]),
-    emqttd:hook('message.acked', fun ?MODULE:on_message_acked/4, [Env]),
-    io:format("kafka start ~n", []).
+    emqttd:hook('message.acked', fun ?MODULE:on_message_acked/4, [Env]).
 
 on_client_connected(ConnAck, Client = #mqtt_client{client_id = ClientId}, _Env) ->
     io:format("client ~s connected, connack: ~w~n", [ClientId, ConnAck]),
+    io:format("**************************************1: ~w~n", []),
     {ok, Client}.
 
 on_client_disconnected(Reason, _Client = #mqtt_client{client_id = ClientId}, _Env) ->
     io:format("client ~s disconnected, reason: ~w~n", [ClientId, Reason]),
+    io:format("**************************************2: ~w~n", []),
     ok.
 
 on_client_subscribe(ClientId, Username, TopicTable, _Env) ->
     io:format("client(~s/~s) will subscribe: ~p~n", [Username, ClientId, TopicTable]),
+    io:format("**************************************3: ~w~n", []),
     {ok, TopicTable}.
 
 on_client_unsubscribe(ClientId, Username, TopicTable, _Env) ->
     io:format("client(~s/~s) unsubscribe ~p~n", [ClientId, Username, TopicTable]),
+    io:format("**************************************4: ~w~n", []),
     {ok, TopicTable}.
 
 on_session_created(ClientId, Username, _Env) ->
+    io:format("**************************************5: ~w~n", []),
     io:format("session(~s/~s) created.", [ClientId, Username]).
 
 on_session_subscribed(ClientId, Username, {Topic, Opts}, _Env) ->
+    io:format("**************************************6: ~w~n", []),
     io:format("session(~s/~s) subscribed: ~p~n", [Username, ClientId, {Topic, Opts}]),
     {ok, {Topic, Opts}}.
 
 on_session_unsubscribed(ClientId, Username, {Topic, Opts}, _Env) ->
+    io:format("**************************************7: ~w~n", []),
     io:format("session(~s/~s) unsubscribed: ~p~n", [Username, ClientId, {Topic, Opts}]),
     ok.
 
 on_session_terminated(ClientId, Username, Reason, _Env) ->
+    io:format("**************************************8: ~w~n", []),
     io:format("session(~s/~s) terminated: ~p.", [ClientId, Username, Reason]).
 
 %% transform message and return
 on_message_publish(Message = #mqtt_message{topic = <<"$SYS/", _/binary>>}, _Env) ->
+    io:format("**************************************9: ~w~n", []),
     {ok, Message};
 
 on_message_publish(Message, _Env) ->
+    io:format("**************************************10: ~w~n", []),
     io:format("publish ~s~n", [emqttd_message:format(Message)]),
     {ok, Message}.
 
 on_message_delivered(ClientId, Username, Message, _Env) ->
+    io:format("**************************************11: ~w~n", []),
     io:format("delivered to client(~s/~s): ~s~n", [Username, ClientId, emqttd_message:format(Message)]),
     {ok, Message}.
 
 on_message_acked(ClientId, Username, Message, _Env) ->
+    io:format("**************************************12: ~w~n", []),
     io:format("client(~s/~s) acked: ~s~n", [Username, ClientId, emqttd_message:format(Message)]),
     {ok, Message}.
 
