@@ -48,13 +48,13 @@ load(Env) ->
 on_client_connected(ConnAck, Client = #mqtt_client{client_id = ClientId}, _Env) ->
     io:format("client ~s connected, connack: ~w~n", [ClientId, ConnAck]),
 
-    ekaf_send(<<"connected">>, ClientId, {}, _Env),
+%%    ekaf_send(<<"connected">>, ClientId, {}, _Env),
 
     {ok, Client}.
 
 on_client_disconnected(Reason, _Client = #mqtt_client{client_id = ClientId}, _Env) ->
     io:format("client ~s disconnected, reason: ~w~n", [ClientId, Reason]),
-    ekaf_send(<<"connected">>, ClientId, {}, _Env),
+%%    ekaf_send(<<"connected">>, ClientId, {}, _Env),
     ok.
 
 on_client_subscribe(ClientId, TopicTable, _Env) ->
@@ -70,12 +70,12 @@ on_session_created(ClientId, _Env) ->
 
 on_session_subscribed(ClientId, {Topic, Opts}, _Env) ->
     io:format("session(~s/~s) subscribed: ~p~n", [ClientId, {Topic, Opts}]),
-    ekaf_send(<<"subscribed">>, ClientId, {Topic, Opts}, _Env),
+%%    ekaf_send(<<"subscribed">>, ClientId, {Topic, Opts}, _Env),
     {ok, {Topic, Opts}}.
 
 on_session_unsubscribed(ClientId, {Topic, Opts}, _Env) ->
     io:format("session(~s/~s) unsubscribed: ~p~n", [ClientId, {Topic, Opts}]),
-    ekaf_send(<<"unsubscribed">>, ClientId, {Topic, Opts}, _Env),
+%%    ekaf_send(<<"unsubscribed">>, ClientId, {Topic, Opts}, _Env),
     ok.
 
 on_session_terminated(ClientId, Reason, _Env) ->
@@ -88,7 +88,7 @@ on_message_publish(Message = #mqtt_message{topic = <<"$SYS/", _/binary>>}, _Env)
 
 on_message_publish(Message, _Env) ->
     io:format("publish ~s~n", [emqttd_message:format(Message)]),
-    ekaf_send(<<"public">>, {}, Message, _Env),
+%%    ekaf_send(<<"public">>, {}, Message, _Env),
     {ok, Message}.
 
 on_message_delivered(ClientId, Message, _Env) ->
