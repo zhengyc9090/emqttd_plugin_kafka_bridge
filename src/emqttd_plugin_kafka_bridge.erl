@@ -45,7 +45,7 @@
 
 %% Called when the plugin application start
 load(Env) ->
-    ekaf_init([Env]),
+%%    ekaf_init([Env]),
     emqttd:hook('client.connected', fun ?MODULE:on_client_connected/3, [Env]),
     emqttd:hook('client.disconnected', fun ?MODULE:on_client_disconnected/3, [Env]),
     emqttd:hook('client.subscribe', fun ?MODULE:on_client_subscribe/3, [Env]),
@@ -238,24 +238,24 @@ on_message_acked(ClientId, Message, _Env) ->
 %% ekaf_init
 %% ===================================================================
 
-ekaf_init(_Env) ->
-    %% Get parameters，kafka配置，发送数据
-    {ok, Kafka} = application:get_env(emqttd_plugin_kafka_bridge, kafka),
-    BootstrapBroker = proplists:get_value(bootstrap_broker, Kafka),
-    PartitionStrategy= proplists:get_value(partition_strategy, Kafka),
-    %% Set partition strategy, like application:set_env(ekaf, ekaf_partition_strategy, strict_round_robin),
-    application:set_env(ekaf, ekaf_partition_strategy, PartitionStrategy),
-    %% Set broker url and port, like application:set_env(ekaf, ekaf_bootstrap_broker, {"127.0.0.1", 9092}),
-    application:set_env(ekaf, ekaf_bootstrap_broker, BootstrapBroker),
-    %% Set topic
-    application:set_env(ekaf, ekaf_bootstrap_topics, <<"broker_message">>),
-
-    {ok, _} = application:ensure_all_started(kafkamocker),
-    {ok, _} = application:ensure_all_started(gproc),
-    {ok, _} = application:ensure_all_started(ranch),
-    {ok, _} = application:ensure_all_started(ekaf),
-
-    io:format("Init ekaf with ~p~n", [BootstrapBroker]).
+%%ekaf_init(_Env) ->
+%%    %% Get parameters，kafka配置，发送数据
+%%    {ok, Kafka} = application:get_env(emqttd_plugin_kafka_bridge, kafka),
+%%    BootstrapBroker = proplists:get_value(bootstrap_broker, Kafka),
+%%    PartitionStrategy= proplists:get_value(partition_strategy, Kafka),
+%%    %% Set partition strategy, like application:set_env(ekaf, ekaf_partition_strategy, strict_round_robin),
+%%    application:set_env(ekaf, ekaf_partition_strategy, PartitionStrategy),
+%%    %% Set broker url and port, like application:set_env(ekaf, ekaf_bootstrap_broker, {"127.0.0.1", 9092}),
+%%    application:set_env(ekaf, ekaf_bootstrap_broker, BootstrapBroker),
+%%    %% Set topic
+%%    application:set_env(ekaf, ekaf_bootstrap_topics, <<"broker_message">>),
+%%
+%%    {ok, _} = application:ensure_all_started(kafkamocker),
+%%    {ok, _} = application:ensure_all_started(gproc),
+%%    {ok, _} = application:ensure_all_started(ranch),
+%%    {ok, _} = application:ensure_all_started(ekaf),
+%%
+%%    io:format("Init ekaf with ~p~n", [BootstrapBroker]).
 
 
 %% Called when the plugin application stop
