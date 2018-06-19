@@ -61,7 +61,7 @@ on_client_subscribe(ClientId,Username ,TopicTable, _Env) ->
                 {topic, lists:last(Key)},
                 {cluster_node, node()}
             ]),
-            ekaf:produce_sync(<<"broker_message">>, list_to_binary(Json));
+            ekaf:produce_sync(<<"broker_message">>, {<<"mykey_2">>, list_to_binary(Json)});
         _ ->
             %% If TopicTable is empty
             io:format("empty topic ~n")
@@ -98,7 +98,7 @@ on_message_publish(Message, _Env) ->
 %        ,{ts, emqttd_time:now_to_secs(Timestamp)}
     ]),
 
-    ekaf:produce_sync(<<"broker_message">>, list_to_binary(Json)),
+    ekaf:produce_sync(<<"broker_message">>, {<<"mykey_2">>, list_to_binary(Json)}),
 
     {ok, Message}.
 
