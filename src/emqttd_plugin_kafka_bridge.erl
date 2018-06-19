@@ -82,7 +82,7 @@ on_message_publish(Message = #mqtt_message{topic = <<"$SYS/", _/binary>>}, _Env)
 on_message_publish(Message, _Env) ->
     io:format("publish ~s~n", [emqttd_message:format(Message)]),
 
-    From = Message#mqtt_message.from,
+%%    From = Message#mqtt_message.from,
 %    Sender =  Message#mqtt_message.sender,
     Topic = Message#mqtt_message.topic,
     Payload = Message#mqtt_message.payload,
@@ -91,12 +91,12 @@ on_message_publish(Message, _Env) ->
 
     Json = mochijson2:encode([
         {type, <<"published">>},
-        {client_id, From},
+%%        {client_id, From},
         {topic, Topic},
         {payload, Payload},
         {qos, QoS},
-        {cluster_node, node()},
-        {ts, emqttd_time:now_to_secs(Timestamp)}
+        {cluster_node, node()}
+%%        {ts, emqttd_time:now_to_secs(Timestamp)}
     ]),
 
     ekaf:produce_sync(<<"broker_message">>, {<<"msg_publish">>, list_to_binary(Json)}),
