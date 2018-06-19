@@ -98,7 +98,8 @@ on_message_publish(Message, _Env) ->
 %        ,{ts, emqttd_time:now_to_secs(Timestamp)}
     ]),
 
-    ekaf:produce_sync(<<"broker_message">>, list_to_binary(Json)),
+%%    ekaf:produce_sync(<<"broker_message">>, list_to_binary(Json)),
+    ekaf:produce_sync(<<"broker_message">>, Json),
 
     {ok, Message}.
 
@@ -107,24 +108,24 @@ on_message_delivered(ClientId,Username, Message, _Env) ->
 
 %    From = Message#mqtt_message.from,
 %    Sender =  Message#mqtt_message.sender,
-    Topic = Message#mqtt_message.topic,
-    Payload = Message#mqtt_message.payload,
-    QoS = Message#mqtt_message.qos,
-    Timestamp = Message#mqtt_message.timestamp,
+%%    Topic = Message#mqtt_message.topic,
+%%    Payload = Message#mqtt_message.payload,
+%%    QoS = Message#mqtt_message.qos,
+%%    Timestamp = Message#mqtt_message.timestamp,
 
-    Json = mochijson2:encode([
-        {type, <<"delivered">>},
-        {client_id, ClientId},
-%        {from, From},
-        {topic, Topic},
-% 如果是二进制 {payload, binary_to_list(Payload)},
-        {payload, Payload},
-        {qos, QoS},
-        {cluster_node, node()}
-%        ,{ts, emqttd_time:now_to_secs(Timestamp)}
-    ]),
+%%    Json = mochijson2:encode([
+%%        {type, <<"delivered">>},
+%%        {client_id, ClientId},
+%%%        {from, From},
+%%        {topic, Topic},
+%%% 如果是二进制 {payload, binary_to_list(Payload)},
+%%        {payload, Payload},
+%%        {qos, QoS},
+%%        {cluster_node, node()}
+%%%        ,{ts, emqttd_time:now_to_secs(Timestamp)}
+%%    ]),
 
-    ekaf:produce_sync(<<"broker_message">>, list_to_binary(Json)),
+%%    ekaf:produce_sync(<<"broker_message">>, list_to_binary(Json)),
 
     {ok, Message}.
 
@@ -133,24 +134,24 @@ on_message_acked(ClientId,Username, Message, _Env) ->
 
 %    From = Message#mqtt_message.from,
 %    Sender =  Message#mqtt_message.sender,
-    Topic = Message#mqtt_message.topic,
-    Payload = Message#mqtt_message.payload,
-    QoS = Message#mqtt_message.qos,
-    Timestamp = Message#mqtt_message.timestamp,
+%%    Topic = Message#mqtt_message.topic,
+%%    Payload = Message#mqtt_message.payload,
+%%    QoS = Message#mqtt_message.qos,
+%%    Timestamp = Message#mqtt_message.timestamp,
 
-    Json = mochijson2:encode([
-        {type, <<"acked">>},
-        {client_id, ClientId},
-%        {from, From},
-        {topic, Topic},
-% 如果是二进制 {payload, binary_to_list(Payload)},
-        {payload, Payload},
-        {qos, QoS},
-        {cluster_node, node()}
-%        ,{ts, emqttd_time:now_to_secs(Timestamp)}
-    ]),
+%%    Json = mochijson2:encode([
+%%        {type, <<"acked">>},
+%%        {client_id, ClientId},
+%%%        {from, From},
+%%        {topic, Topic},
+%%% 如果是二进制 {payload, binary_to_list(Payload)},
+%%        {payload, Payload},
+%%        {qos, QoS},
+%%        {cluster_node, node()}
+%%%        ,{ts, emqttd_time:now_to_secs(Timestamp)}
+%%    ]),
 
-    ekaf:produce_sync(<<"broker_message">>, list_to_binary(Json)),
+%%    ekaf:produce_sync(<<"broker_message">>, list_to_binary(Json)),
 
     {ok, Message}.
 
