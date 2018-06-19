@@ -18,6 +18,8 @@
 
 -include_lib("../../emqttd/include/emqttd.hrl").
 
+-define(BROKER,<<"broker_message">>).
+
 -export([load/1, unload/0]).
 
 %% Hooks functions
@@ -61,7 +63,7 @@ on_client_subscribe(ClientId,Username ,TopicTable, _Env) ->
                 {topic, lists:last(Key)},
                 {cluster_node, node()}
             ]),
-            ekaf:produce_sync(<<"broker_message">>, {<<"mykey_2">>, list_to_binary(Json)});
+            ekaf:produce_sync(?BROKER, {<<"msg_subscribe">>, list_to_binary(Json)});
         _ ->
             %% If TopicTable is empty
             io:format("empty topic ~n")
@@ -80,7 +82,7 @@ on_message_publish(Message = #mqtt_message{topic = <<"$SYS/", _/binary>>}, _Env)
 on_message_publish(Message, _Env) ->
     io:format("publish ~s~n", [emqttd_message:format(Message)]),
 
-%    From = Message#mqtt_message.from,
+    From = Message#mqtt_message.from,
 %    Sender =  Message#mqtt_message.sender,
     Topic = Message#mqtt_message.topic,
     Payload = Message#mqtt_message.payload,
@@ -89,16 +91,15 @@ on_message_publish(Message, _Env) ->
 
     Json = mochijson2:encode([
         {type, <<"published">>},
-%        {client_id, From},
+        {client_id, From},
         {topic, Topic},
-% 如果是二进制 {payload, binary_to_list(Payload)},
         {payload, Payload},
         {qos, QoS},
-        {cluster_node, node()}
-%        ,{ts, emqttd_time:now_to_secs(Timestamp)}
+        {cluster_node, node()},
+        {ts, emqttd_time:now_to_secs(Timestamp)}
     ]),
 
-    ekaf:produce_sync(<<"broker_message">>, {<<"mykey_2">>, list_to_binary(Json)}),
+    ekaf:produce_sync(<<"broker_message">>, {<<"msg_publish">>, list_to_binary(Json)}),
 
     {ok, Message}.
 
