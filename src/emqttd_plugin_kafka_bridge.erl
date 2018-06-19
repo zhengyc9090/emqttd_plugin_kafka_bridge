@@ -98,8 +98,7 @@ on_message_publish(Message, _Env) ->
 %        ,{ts, emqttd_time:now_to_secs(Timestamp)}
     ]),
 
-%%    ekaf:produce_sync(<<"broker_message">>, list_to_binary(Json)),
-    ekaf:produce_sync(<<"broker_message">>, Json),
+    ekaf:produce_sync(<<"broker_message">>, list_to_binary(Json)),
 
     {ok, Message}.
 
